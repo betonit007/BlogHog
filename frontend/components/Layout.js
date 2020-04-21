@@ -1,8 +1,9 @@
+import Header from './Header'
 
 const Layout = ({ children }) => {
     return (
         <>
-          <p className="text-danger">Header</p>
+          <Header />
             {children}
           <p>Footer</p>     
         </>
