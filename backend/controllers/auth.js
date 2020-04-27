@@ -4,11 +4,10 @@ const jwt = require('jsonwebtoken')
 const expressJwt = require('express-jwt') // will check to see if token is valid and/or expired
 
 exports.signup = async (req, res) => {
- 
   const { name, email, password } = req.body
  
   const isUser = await User.findOne({email})
-  
+
   if(isUser) {
     return res.status(400).json({
       error: 'Email is already in use'
@@ -19,14 +18,9 @@ exports.signup = async (req, res) => {
   let profile = `${process.env.CLIENT_URL}/profile/username` 
 
   let newUser = new User({name, email, password, profile, username})
-  newUser.save((err, savedUser) => {
-    if(err) {
-      return res.status(400).json({ error: err})
-    }
-    res.json({
-      message: 'Signup success! Please signin'
-    })
-  })
+  await newUser.save()
+
+  res.json({msg: 'New user successfully saved'})
 }
 
 exports.signin = async (req, res) => {

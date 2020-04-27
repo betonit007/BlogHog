@@ -1,5 +1,6 @@
 const express = require('express')
 const morgan = require('morgan')
+var cors = require('cors')
 const cookieParser = require('cookie-parser')
 const connectDB = require('./config/db')
 require('dotenv').config()
@@ -10,6 +11,7 @@ const app = express()
 
 connectDB();
 
+app.use(cors())  //ADDED TO TAKE CARE OF CORS ERROR - MAY WANT TO REMOVE ON DEPLOY!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 app.use(morgan('dev'))
 app.use(express.json({ extended: false })) //to access req.body
 app.use(cookieParser())
