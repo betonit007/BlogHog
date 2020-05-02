@@ -1,10 +1,17 @@
-import React from 'react'
+
 import Layout from '../components/Layout'
+import SigninComponent from '../components/auth/SigninComponent'
 
 const Signin = () => {
     return (
         <Layout>
-            <h2>Signin Page</h2>
+            <h2 className='text-center pt-4 pb-4'>Signin Page</h2>
+            <div className="row">
+                <div className="col-md-8 offset-md-2">
+                    <SigninComponent />
+                </div>
+            </div>
+
         </Layout>
     )
 }

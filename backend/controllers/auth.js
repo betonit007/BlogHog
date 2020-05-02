@@ -3,12 +3,21 @@ const shortId = require('shortid')
 const jwt = require('jsonwebtoken')
 const expressJwt = require('express-jwt') // will check to see if token is valid and/or expired
 
+exports.read = (req, res) => {
+  req.profile.hashed_password = undefined;
+  return res.json(req.profile)
+}
+
 exports.signup = async (req, res) => {
+ 
   const { name, email, password } = req.body
  
-  const isUser = await User.findOne({email})
+  try {
 
+    const isUser = await User.findOne({email})
+  
   if(isUser) {
+    console.log('error')
     return res.status(400).json({
       error: 'Email is already in use'
     })
@@ -20,7 +29,13 @@ exports.signup = async (req, res) => {
   let newUser = new User({name, email, password, profile, username})
   await newUser.save()
 
-  res.json({msg: 'New user successfully saved'})
+  res.json({msg: "New user saved!"})
+    
+  } catch (err) {
+    console.error(err.message)
+      res.status(500).send('Server Error')
+  }
+  
 }
 
 exports.signin = async (req, res) => {
@@ -55,3 +70,41 @@ exports.signout = (req, res) => {
 exports.requireSignin = expressJwt({ //middleware that requires a signed in user (checks to see in secret in token matches secret in env file)
   secret: process.env.JWT_SECRET
 })
+
+exports.authMiddleware = async (req, res, next) => {
+  const authUserId = req.user._id
+
+  try {
+    const user = await User.findById({_id: authUserId})
+    req.profile = user
+    next()
+
+  } catch (err) {
+    res.status(400).json({
+      error: 'User not found'
+    })
+  }
+  
+}
+
+exports.adminMiddleware = async (req, res, next) => {
+  console.log('********************************************************', req.user)
+  const adminUserId = req.user._id
+
+  try {
+    const user = await User.findById({_id: adminUserId})
+    if(user.role !== 1) {
+      return res.status(400).json({
+        error: 'Admin Resource. Access denied'
+    })
+    }
+    req.profile = user
+    next()
+
+  } catch (err) {
+    res.status(400).json({
+      error: 'Admin not found'
+    })
+  }
+  
+}
